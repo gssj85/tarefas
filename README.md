@@ -39,9 +39,6 @@ MAIL_USERNAME=
 MAIL_PASSWORD=
 ```
 ---
-
-
-
 #  Endpoints
 #### Criar novo Usuário
 ```
