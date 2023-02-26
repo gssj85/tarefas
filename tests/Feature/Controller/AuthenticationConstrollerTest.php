@@ -32,7 +32,6 @@ class AuthenticationConstrollerTest extends TestCase
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'email' => $user->email,
                 ],
                 'authorisation' => [
                     'token' => $response['authorisation']['token'],
@@ -77,9 +76,6 @@ class AuthenticationConstrollerTest extends TestCase
                 'user' => [
                     'id',
                     'name',
-                    'email',
-                    'created_at',
-                    'updated_at'
                 ],
                 'authorisation' => [
                     'token',

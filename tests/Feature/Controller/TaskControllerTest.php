@@ -30,12 +30,44 @@ class TaskControllerTest extends TestCase
         $this->actingAs($user)->json(Request::METHOD_GET, route('tasks.index'))
             ->assertOk()
             ->assertJsonStructure([
-                'current_page',
-                'data',
-                'per_page',
-                'prev_page_url',
-                'to',
-                'total'
+                'data' => [
+                    '*' => [
+                        'task' => [
+                            'id',
+                            'title',
+                            'description',
+                            'expected_start_date',
+                            'expected_completion_date',
+                            'status',
+                            'user' => [
+                                'id',
+                                'name'
+                            ],
+                            'userAssignedTo' => [
+                                'id',
+                                'name'
+                            ]
+                        ]
+                    ]
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ]
+                ]
             ])
             ->assertJsonCount(1, 'data');
     }
@@ -61,16 +93,22 @@ class TaskControllerTest extends TestCase
         $this->actingAs($user)->json(Request::METHOD_POST, route('tasks.store'), $payload, $headers)
             ->assertCreated()
             ->assertJsonStructure([
-                'title',
-                'description',
-                "expected_start_date",
-                "expected_completion_date",
-                "status",
-                "user_id_assigned_to",
-                "user_id",
-                "updated_at",
-                "created_at",
-                "id"
+                'task' => [
+                    'id',
+                    'title',
+                    'description',
+                    'expected_start_date',
+                    'expected_completion_date',
+                    'status',
+                    'user' => [
+                        'id',
+                        'name',
+                    ],
+                    'userAssignedTo' => [
+                        'id',
+                        'name',
+                    ],
+                ],
             ]);
 
         $this->assertDatabaseCount('tasks', 1);
@@ -88,16 +126,24 @@ class TaskControllerTest extends TestCase
         $this->actingAs($user)->json(Request::METHOD_GET, route('tasks.show', ['task' => $task->id]))
             ->assertOk()
             ->assertJsonStructure([
-                'id',
-                'title',
-                'description',
-                'expected_start_date',
-                'expected_completion_date',
-                'status',
-                'user_id',
-                'user_id_assigned_to',
-                'created_at',
-                'updated_at'
+                'data' => [
+                    'task' => [
+                        'id',
+                        'title',
+                        'description',
+                        'expected_start_date',
+                        'expected_completion_date',
+                        'status',
+                        'user' => [
+                            'id',
+                            'name'
+                        ],
+                        'userAssignedTo' => [
+                            'id',
+                            'name'
+                        ]
+                    ]
+                ]
             ]);
     }
 
