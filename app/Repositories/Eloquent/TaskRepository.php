@@ -29,7 +29,7 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
         if ($assignedTo) {
             try {
                 match ($assignedTo) {
-                    'me' => $query->joinWhere('users','tasks.user_id_assigned_to', '=', $userId),
+                    'me' => $query->where('user_id_assigned_to', $userId),
                     'others' => $query->where('user_id', $userId)
                         ->whereNot('user_id_assigned_to', $userId),
                 };
