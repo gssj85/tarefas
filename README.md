@@ -1,6 +1,14 @@
 # Gerenciador de Tarefas
 
-# Instruções de Instalação
+## Tecnologias utilizadas:
+- PHP 8
+- Laravel 10
+- PostgreSQL 15
+- Nginx
+- Redis
+- Docker e Docker Compose
+
+## Instruções de Instalação
 
 #### Faz o build e sobe os containers
 ``` bash
@@ -39,7 +47,7 @@ MAIL_USERNAME=
 MAIL_PASSWORD=
 ```
 ---
-#  Endpoints
+##  Endpoints
 #### Criar novo Usuário
 ```
 POST http://localhost:8000/auth/register
@@ -116,6 +124,6 @@ Parâmetros de rota:
 - status (status da tarefa, pode ser in_progress, done ou canceled).  
  
 ```
-# Observações
+## Observações
 - Apenas usuários logados podem buscar, criar, editar e excluir tarefas;
 - Apenas tarefas criadas ou atribuídas ao usuário podem ser acessadas ou modificadas.
