@@ -1,12 +1,29 @@
 # Gerenciador de Tarefas
 
+## O Projeto
+
+Sistema de gerenciamento de tarefas com as seguintes funcionalidades:
+
+- Registro de usuários com nome, e-mail e senha.
+- Login de usuários com e-mail e senha.
+- Criação, edição, visualização e exclusão de tarefas.
+- Cada tarefa deve ter um título, uma descrição, uma data de início, uma data de conclusão prevista e um status (em andamento, concluída, cancelada).
+- Os usuários são capazes de atribuir uma tarefa a si mesmos ou a outros usuários.
+- Os usuários são capazes de filtrar suas tarefas por status (em andamento, concluída, cancelada) e atribuição (tarefas atribuídas a mim, tarefas atribuídas a outros).
+- Validação de dados para garantir que as informações inseridas sejam corretas e coerentes.
+- Funcionalidade de envio de e-mails para notificar os usuários quando uma tarefa é atribuída ou concluída.
+
+
+
 ## Tecnologias utilizadas:
 - PHP 8
 - Laravel 10
 - PostgreSQL 15
+- JSON Web Tokens (JWT)
 - Nginx
 - Redis
 - Docker e Docker Compose
+- Insomnia (arquivo de rotas na pasta doc para importar)
 
 ## Instruções de Instalação
 
