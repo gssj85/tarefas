@@ -13,18 +13,18 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
 {
     protected mixed $model = Task::class;
 
-    public function findByIdWithUserAndAssigned(int $taskId)
+    public function findByIdWithUserAndAssigned(int $taskId): ?\Illuminate\Database\Eloquent\Model
     {
-        return Task::with('user', 'userAssignedTo')->find($taskId);
+        return $this->getSelectQueryBuilder()->where('tasks.id', $taskId)->first();
     }
 
-    public function findByAssignmentAndStatus(array $data): Builder
+    public function findByAssignmentAndStatus(array $data): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $userId = $data['user_id'];
         $assignedTo = $data['assigned-to'] ?? null;
         $status = $data['status'] ?? null;
 
-        $query = Task::query()->with('user', 'userAssignedTo');
+        $query = $this->getSelectQueryBuilder();
 
         if ($assignedTo) {
             try {
@@ -59,6 +59,34 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
             $query->where('status', $statusEnum);
         }
 
-        return $query;
+        return $query->paginate(5);
+    }
+
+    private function getSelectQueryBuilder(): Builder
+    {
+        return Task::query()->select([
+            'tasks.id',
+            'tasks.title',
+            'tasks.description',
+            'tasks.expected_start_date',
+            'tasks.expected_completion_date',
+            'tasks.status',
+            'user.id as user_id',
+            'user.name as user_name',
+            'userAssignedTo.id as user_id_assigned_to',
+            'userAssignedTo.name as user_name_assigned_to'
+        ])
+            ->join(
+                'users as user',
+                'user.id',
+                '=',
+                'tasks.user_id'
+            )
+            ->join(
+                'users as userAssignedTo',
+                'userAssignedTo.id',
+                '=',
+                'tasks.user_id_assigned_to'
+            );
     }
 }

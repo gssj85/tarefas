@@ -29,7 +29,9 @@ class TaskController extends Controller
         $data['user_id'] = $user->id;
 
         try {
-            return TaskResource::collection($this->taskRepository->findByAssignmentAndStatus($data)->paginate(5));
+            return TaskResource::collection(
+                $this->taskRepository->findByAssignmentAndStatus($data)
+            );
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()]);
         }

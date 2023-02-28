@@ -21,12 +21,12 @@ class TaskResource extends JsonResource
                 'expected_completion_date' => $this->expected_completion_date->format('d/m/Y H:i:s'),
                 'status' => TaskStatusEnum::from($this->status)->getTranslatedName(),
                 'user' => [
-                    'id' => $this->user->id,
-                    'name' => $this->user->name,
+                    'id' => $this->user_id,
+                    'name' => $this->user_name,
                 ],
                 'userAssignedTo' => [
-                    'id' => $this->userAssignedTo->id,
-                    'name' => $this->userAssignedTo->name
+                    'id' => $this->user_id_assigned_to,
+                    'name' => $this->user_name_assigned_to
                 ]
             ]
         ];

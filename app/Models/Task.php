@@ -36,11 +36,11 @@ class Task extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id')->withDefault();
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function userAssignedTo()
     {
-        return $this->belongsTo(User::class, 'user_id_assigned_to')->withDefault();
+        return $this->belongsTo(User::class, 'user_id_assigned_to');
     }
 }
