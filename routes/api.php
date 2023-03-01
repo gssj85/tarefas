@@ -19,7 +19,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('me', [AuthController::class, 'me']);
     });
 
-    Route::middleware('cache.middleware')->as('tasks.')->group(function () {
+    Route::middleware('cache.middleware:tasks')->as('tasks.')->group(function () {
         Route::get('/tasks', [TaskController::class, 'index']);
         Route::get('/tasks/{task}', [TaskController::class, 'show']);
     });

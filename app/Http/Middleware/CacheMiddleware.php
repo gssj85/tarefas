@@ -11,14 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CacheMiddleware
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $tag): Response
     {
         $page = $request->page ?? 1;
         $userId = auth()->user()->id;
         $url = request()->url();
         $segments = request()->segments();
         $isPaginated = count($segments) === 1;
-        $tag = $segments[0];
 
         $queryString = null;
         if ($isPaginated) {
