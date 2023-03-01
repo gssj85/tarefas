@@ -14,14 +14,11 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends Controller
 {
-    public function __construct(private readonly TaskRepositoryInterface $taskRepository) {
-
-    }
+    public function __construct(private readonly TaskRepositoryInterface $taskRepository) {}
 
     public function index(Request $request, Authenticatable $user)
     {
