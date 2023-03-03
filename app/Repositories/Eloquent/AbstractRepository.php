@@ -22,9 +22,7 @@ abstract class AbstractRepository
 
     public function store(array $data)
     {
-        return DB::transaction(function () use ($data) {
-            return $this->model->create($data);
-        }, 5);
+        return $this->model->create($data);
     }
 
     public function find(int $id)
