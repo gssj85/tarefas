@@ -14,6 +14,7 @@ use App\Repositories\Contracts\TaskRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends Controller
@@ -34,14 +35,6 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user): JsonResponse
     {
-        $permissions = auth()->payload()->get('permissions');
-        if (!in_array('tasks:store', $permissions, true)) {
-            return response()->json(
-                ['message' => "O usuário $user->name não possui permissão para criar tarefas."],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
         $data = $storeTaskRequest->validated();
         $data['user_id'] = $user->id;
         $taskModel = $this->taskRepository->store($data);
@@ -56,32 +49,21 @@ class TaskController extends Controller
 
     public function show(int $taskId)
     {
-        $userId = auth()->id();
-        $taskModel = $this->taskRepository->findByIdWithUserAndAssigned($taskId);
-
-        if ($taskModel === null) {
-            return response()->json(['message' => 'Tarefa não encontrada!'], Response::HTTP_NOT_FOUND);
+        $task = $this->taskRepository->findByIdWithUserAndAssigned($taskId);
+        if ($task === null) {
+            return response()->json(['message' => 'Tarefa não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        if ($taskModel->user_id !== $userId && $taskModel->user_id_assigned_to !== $userId) {
-            $message = 'Permissão negada. Apenas tarefas criadas ou atribuídas a este usuário podem ser acessadas.';
-            return response()->json(['message' => $message], Response::HTTP_UNAUTHORIZED);
+        $response = Gate::inspect('seeAllTasks', $task);
+        if (!$response->allowed()) {
+            return response()->json(['message' => $response->message()], $response->status());
         }
 
-        return new TaskResource($taskModel);
-
+        return new TaskResource($task);
     }
 
     public function update(int $taskId, UpdateTaskRequest $updateTaskRequest, Authenticatable $user): JsonResponse
     {
-        $permissions = auth()->payload()->get('permissions');
-        if (!in_array('tasks:update', $permissions, true)) {
-            return response()->json(
-                ['message' => "O usuário $user->name não possui permissão para editar tarefas."],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
         $oldData = $this->taskRepository->find($taskId);
 
         if ($oldData === null) {
@@ -122,14 +104,6 @@ class TaskController extends Controller
 
     public function destroy(int $taskId, Authenticatable $user): \Illuminate\Http\Response|JsonResponse
     {
-        $permissions = auth()->payload()->get('permissions');
-        if (!in_array('tasks:delete', $permissions, true)) {
-            return response()->json(
-                ['message' => "O usuário $user->name não possui permissão para apagar tarefas."],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
         $userId = $user->id;
         $taskModel = $this->taskRepository->find($taskId);
 

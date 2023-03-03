@@ -14,21 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-    public function __construct() {}
-
     //@TODO Implementar estratégia de invalidar token antigo (blacklist ou token versioning)
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string'
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|max:255'
         ]);
 
-        // Simulando permissões no payload
-        $defaultPermissions = ['tasks:store', 'tasks:update', 'tasks:delete'];
-        if (!$token = auth()->claims(['permissions' => $defaultPermissions])->attempt($credentials)) {
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json([
-                'status' => 'error',
                 'message' => 'Usuário ou senha inválida, acesso não autorizado.'
             ],
                 Response::HTTP_UNAUTHORIZED
@@ -38,12 +33,10 @@ class AuthController extends Controller
         $user = Auth::user();
 
         return response()->json([
-            'status' => 'success',
             'user' => $user,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
-                'permissions' => auth()->payload()->get('permissions'),
                 'expires_in' => auth()->factory()->getTTL() * 60
             ]
         ]);
@@ -58,21 +51,17 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
         $user = $userRepository->store($data);
 
-        // Simulando permissões no payload
-        $defaultPermissions = ['tasks:store', 'tasks:update', 'tasks:delete'];
-        $token = auth()->claims(['permissions' => $defaultPermissions])->attempt([
+        $token = auth()->attempt([
             'email' => $data['email'],
             'password' => $beforeHashPassword
         ]);
 
         return response()->json(
             [
-                'status' => 'success',
                 'user' => $user,
                 'authorisation' => [
                     'token' => $token,
                     'type' => 'bearer',
-                    'permissions' => auth()->payload()->get('permissions'),
                     'expires_in' => auth()->factory()->getTTL() * 60
                 ]
             ],
@@ -80,19 +69,19 @@ class AuthController extends Controller
         );
     }
 
-    public function me()
+    public function me(): JsonResponse
     {
         return response()->json(auth()->user());
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->logout();
 
         return response()->json(['message' => 'Usuário deslogado!']);
     }
 
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return response()->json([
             'access_token' => auth()->refresh(),
