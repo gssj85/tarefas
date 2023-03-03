@@ -10,12 +10,10 @@ class TaskPolicy
 {
     public function seeAllTasks(User $user, ?Task $task): Response
     {
-        $isUserSuperAdmin = $user->hasRole('super-admin');
-
         $taskBelongsOrIsAssignedToUser = $task->user_id === $user->id
             || $task->user_id_assigned_to === $user->id;
 
-        return $taskBelongsOrIsAssignedToUser || $isUserSuperAdmin
+        return $taskBelongsOrIsAssignedToUser
             ? Response::allow()
             : Response::denyAsNotFound('Tarefa não encontrada');
     }
