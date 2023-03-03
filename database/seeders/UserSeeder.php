@@ -6,11 +6,18 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->count(5)->create();
+        $superAdmin = User::firstOrCreate([
+            'name' => 'Super Admin',
+            'email' => 'super@admin.com',
+            'password' => Hash::make('password')
+        ]);
+        $superAdmin->assignRole('super-admin');
     }
 }

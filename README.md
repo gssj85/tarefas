@@ -50,7 +50,7 @@ docker-compose exec app php artisan test
 ```
 #### (opcional) Cria Tarefas e Usuários aleatórios
 ``` bash
-docker-compose exec app php artisan db:seed
+docker-compose exec app php artisan db:seed --class=DummyDataSeeder
 ```
 ---
 * Obs.: Na pasta **docs** encontra-se um JSON para importar no Insomnia. 
