@@ -92,24 +92,7 @@ class TaskControllerTest extends TestCase
 
         $this->actingAs($user)->json(Request::METHOD_POST, route('tasks.store'), $payload, $headers)
             ->assertCreated()
-            ->assertJsonStructure([
-                'task' => [
-                    'id',
-                    'title',
-                    'description',
-                    'expected_start_date',
-                    'expected_completion_date',
-                    'status',
-                    'user' => [
-                        'id',
-                        'name',
-                    ],
-                    'userAssignedTo' => [
-                        'id',
-                        'name',
-                    ],
-                ],
-            ]);
+            ->assertJson(['message' => "Tarefa {$payload['title']} criada com sucesso!"]);
 
         $this->assertDatabaseCount('tasks', 1);
         $this->assertDatabaseHas('tasks', $payload);

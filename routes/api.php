@@ -20,8 +20,8 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::middleware('cache.middleware:tasks')->as('tasks.')->group(function () {
-        Route::get('/tasks', [TaskController::class, 'index']);
-        Route::get('/tasks/{task}', [TaskController::class, 'show']);
+        Route::get('/tasks', [TaskController::class, 'index'])->name('index');
+        Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('show');
     });
 
     Route::apiResource('/tasks', TaskController::class)->except(['index', 'show']);
