@@ -32,7 +32,7 @@ class TaskController extends Controller
         }
     }
 
-    public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user)
+    public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user): JsonResponse
     {
         $permissions = auth()->payload()->get('permissions');
         if (!in_array('tasks:store', $permissions, true)) {
