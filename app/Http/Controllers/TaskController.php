@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TaskAssignedEvent;
 use App\Events\TaskDoneEvent;
+use App\Http\Requests\IndexTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
@@ -13,28 +14,25 @@ use App\Repositories\Contracts\TaskRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends Controller
 {
     public function __construct(private readonly TaskRepositoryInterface $taskRepository) {}
 
-    public function index(Request $request, Authenticatable $user)
+    public function index(IndexTaskRequest $request, Authenticatable $user)
     {
-        $data = $request->all();
+        $data = $request->validated();
         $data['user_id'] = $user->id;
 
         try {
-            return TaskResource::collection(
-                $this->taskRepository->findByAssignmentAndStatus($data)
-            );
+            return TaskResource::collection($this->taskRepository->findByAssignmentAndStatus($data));
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()]);
         }
     }
 
-    public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user): JsonResponse
+    public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user)
     {
         $permissions = auth()->payload()->get('permissions');
         if (!in_array('tasks:store', $permissions, true)) {
@@ -51,8 +49,9 @@ class TaskController extends Controller
         [$message, $subject, $to] = $this->getTaskAssignedEmailData($data, $user);
         TaskAssignedEvent::dispatch($message, $subject, $to);
 
-        $taskResource = new TaskResource($taskModel);
-        return response()->json($taskResource, Response::HTTP_CREATED);
+        return response()->json([
+            'message' => "Tarefa $taskModel->title criada com sucesso!"
+        ], Response::HTTP_CREATED);
     }
 
     public function show(int $taskId)

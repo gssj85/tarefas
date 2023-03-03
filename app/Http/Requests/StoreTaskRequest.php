@@ -46,6 +46,7 @@ class StoreTaskRequest extends FormRequest
                 'required'
             ],
             'user_id_assigned_to' => [
+                'numeric',
                 'exists:users,id',
                 'required'
             ]

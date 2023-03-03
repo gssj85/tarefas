@@ -66,7 +66,7 @@ return [
         'string' => 'The :attribute field must be greater than or equal to :value characters.',
     ],
     'image' => 'The :attribute field must be an image.',
-    'in' => 'The selected :attribute is invalid.',
+    'in' => 'O campo :attribute selecionado é inválido',
     'in_array' => 'The :attribute field must exist in :other.',
     'integer' => 'The :attribute field must be an integer.',
     'ip' => 'The :attribute field must be a valid IP address.',
@@ -111,7 +111,7 @@ return [
     'multiple_of' => 'The :attribute field must be a multiple of :value.',
     'not_in' => 'The selected :attribute is invalid.',
     'not_regex' => 'The :attribute field format is invalid.',
-    'numeric' => 'The :attribute field must be a number.',
+    'numeric' => 'O campo :attribute deve ser um número.',
     'password' => [
         'letters' => 'The :attribute field must contain at least one letter.',
         'mixed' => 'The :attribute field must contain at least one uppercase and one lowercase letter.',
@@ -187,7 +187,7 @@ return [
         'description' => 'descrição',
         'expected_start_date' => 'data de início prevista',
         'expected_completion_date' => 'data de conclusão prevista',
-        'user_id_assigned_to' => 'usuário atribuído'
+        'user_id_assigned_to' => 'usuário atribuído',
+        'assigned-to' => 'atribuição'
     ],
-
 ];

@@ -87,6 +87,7 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
                 'userAssignedTo.id',
                 '=',
                 'tasks.user_id_assigned_to'
-            );
+            )
+            ->orderBy('tasks.id');
     }
 }
