@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class TaskPolicy
 {
-    public function seeAllTasks(User $user, ?Task $task): Response
+    public function taskBelongsOrIsAssignedToUser(User $user, Task $task): Response
     {
         $taskBelongsOrIsAssignedToUser = $task->user_id === $user->id
             || $task->user_id_assigned_to === $user->id;

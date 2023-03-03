@@ -54,7 +54,7 @@ class TaskController extends Controller
             return response()->json(['message' => 'Tarefa não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $response = Gate::inspect('seeAllTasks', $task);
+        $response = Gate::inspect('taskBelongsOrIsAssignedToUser', $task);
         if (!$response->allowed()) {
             return response()->json(['message' => $response->message()], $response->status());
         }
