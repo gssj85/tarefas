@@ -77,7 +77,7 @@ class TaskControllerTest extends TestCase
         $faker = Faker::create('pt_BR');
 
         $user = User::factory()->create();
-        $token = JWTAuth::claims(['permissions' => ['tasks:store']])->fromUser($user);
+        $token = JWTAuth::fromUser($user);
 
         $payload = [
             'title' => $faker->sentence(),
@@ -165,7 +165,7 @@ class TaskControllerTest extends TestCase
     public function testDestroyReturnDataInValidFormat(): void
     {
         $user = User::factory()->create();
-        $token = JWTAuth::claims(['permissions' => ['tasks:delete']])->fromUser($user);
+        $token = JWTAuth::fromUser($user);
         $headers = ['Authorization' => 'Bearer ' . $token];
 
         $task = Task::factory()->create(function () use ($user) {
