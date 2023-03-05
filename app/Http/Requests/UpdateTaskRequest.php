@@ -56,4 +56,15 @@ class UpdateTaskRequest extends FormRequest
             'status' => Str::upper($this->status)
         ]);
     }
+
+    public function validated($key = null, $default = null)
+    {
+        $validatedData = parent::validated();
+
+        if (empty($validatedData['status'])) {
+            unset($validatedData['status']);
+        }
+
+        return $validatedData;
+    }
 }

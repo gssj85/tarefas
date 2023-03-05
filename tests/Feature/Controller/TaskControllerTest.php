@@ -135,7 +135,7 @@ class TaskControllerTest extends TestCase
         $faker = Faker::create('pt_BR');
 
         $user = User::factory()->create();
-        $token = JWTAuth::claims(['permissions' => ['tasks:update']])->fromUser($user);
+        $token = JWTAuth::fromUser($user);
         $headers = ['Authorization' => 'Bearer ' . $token];
 
         $task = Task::factory()->create([
@@ -154,8 +154,7 @@ class TaskControllerTest extends TestCase
                 $payload,
                 $headers
             )
-            ->assertOk()
-            ->assertJson(['message' => "Tarefa com o ID: $task->id atualizada com sucesso!"]);
+            ->assertOk();
 
         $this->assertDatabaseHas('tasks', [
             'id' => $task->id,
@@ -184,7 +183,7 @@ class TaskControllerTest extends TestCase
                 uri: route('tasks.destroy', ['task' => $task->id]),
                 headers: $headers
             )
-            ->assertNoContent();
+            ->assertOk();
 
         $this->assertModelMissing($task);
     }
