@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use App\Enums\TaskStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Enum;
 
 class UpdateTaskRequest extends FormRequest
@@ -13,6 +14,13 @@ class UpdateTaskRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'status' => Str::upper($this->status)
+        ]);
     }
 
     public function rules(): array
@@ -40,5 +48,12 @@ class UpdateTaskRequest extends FormRequest
             'status' => new Enum(TaskStatusEnum::class),
             'user_id_assigned_to' => 'exists:users,id'
         ];
+    }
+
+    protected function passedValidation(): void
+    {
+        $this->replace([
+            'status' => Str::upper($this->status)
+        ]);
     }
 }

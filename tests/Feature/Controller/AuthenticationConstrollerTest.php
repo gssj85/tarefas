@@ -28,7 +28,6 @@ class AuthenticationConstrollerTest extends TestCase
 
         $response->assertOk()
             ->assertJson([
-                'status' => $response['status'],
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -36,7 +35,6 @@ class AuthenticationConstrollerTest extends TestCase
                 'authorisation' => [
                     'token' => $response['authorisation']['token'],
                     'type' => $response['authorisation']['type'],
-                    'permissions' => $response['authorisation']['permissions'],
                     'expires_in' => $response['authorisation']['expires_in']
                 ]
             ]);
@@ -72,7 +70,6 @@ class AuthenticationConstrollerTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonStructure([
-                'status',
                 'user' => [
                     'id',
                     'name',
@@ -80,7 +77,6 @@ class AuthenticationConstrollerTest extends TestCase
                 'authorisation' => [
                     'token',
                     'type',
-                    'permissions',
                     'expires_in'
                 ]
             ]);

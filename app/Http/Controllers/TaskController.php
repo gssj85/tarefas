@@ -42,37 +42,29 @@ class TaskController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    public function show(int $taskId): TaskResource|JsonResponse
+    public function show(int $taskId): \Illuminate\Http\Response|TaskResource
     {
         $task = $this->taskRepository->findByIdWithUserAndAssigned($taskId);
-        if ($task === null) {
-            return response()->json(['message' => 'Tarefa não encontrada'], Response::HTTP_NOT_FOUND);
-        }
 
-        $response = Gate::inspect('show', $task);
-        if (!$response->allowed()) {
-            return response()->json(['message' => $response->message()], $response->status());
+        if ($task === null || Gate::inspect('show', $task)->denied()) {
+            return response()->noContent(Response::HTTP_NOT_FOUND);
         }
 
         return new TaskResource($task);
     }
 
-    public function update(int $taskId, UpdateTaskRequest $updateTaskRequest, Authenticatable $user): JsonResponse
-    {
+    public function update(
+        int $taskId,
+        UpdateTaskRequest $updateTaskRequest,
+        Authenticatable $user
+    ): \Illuminate\Http\Response {
         $oldData = $this->taskRepository->find($taskId);
 
-        if ($oldData === null) {
-            return response()->json(
-                ['message' => "Tarefa de ID $taskId não encontrada!"],
-                Response::HTTP_NOT_FOUND
-            );
+        if ($oldData === null || Gate::inspect('updateOrDelete', $oldData)->denied()) {
+            return response()->noContent(Response::HTTP_NOT_FOUND);
         }
-        $oldData->makeHidden(['status', 'user_id_assigned_to']);
 
-        if ($oldData->user_id !== $user->id) {
-            $message = 'Permissão negada. Apenas tarefas criadas por esse usuário podem ser modificadas.';
-            return response()->json(['message' => $message], Response::HTTP_UNAUTHORIZED);
-        }
+        $oldData->makeHidden(['status', 'user_id_assigned_to']);
 
         $newData = $updateTaskRequest->validated();
         $this->taskRepository->update($taskId, $newData);
@@ -94,26 +86,20 @@ class TaskController extends Controller
             TaskDoneEvent::dispatch($message, $subject, $to);
         }
 
-        return response()->json(['message' => "Tarefa com o ID: $taskId atualizada com sucesso!"]);
+        return response()->noContent(Response::HTTP_OK);
     }
 
-    public function destroy(int $taskId, Authenticatable $user): \Illuminate\Http\Response|JsonResponse
+    public function destroy(int $taskId): \Illuminate\Http\Response
     {
-        $userId = $user->id;
-        $taskModel = $this->taskRepository->find($taskId);
+        $task = $this->taskRepository->find($taskId);
 
-        if ($taskModel === null) {
-            return response()->json(['message' => 'Tarefa não encontrada!'], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($taskModel->user_id !== $userId) {
-            $message = 'Permissão negada. Apenas tarefas criadas por este usuário podem ser apagadas.';
-            return response()->json(['message' => $message], Response::HTTP_UNAUTHORIZED);
+        if ($task === null || Gate::inspect('updateOrDelete', $task)->denied()) {
+            return response()->noContent(Response::HTTP_NOT_FOUND);
         }
 
         $this->taskRepository->destroy($taskId);
 
-        return response()->noContent();
+        return response()->noContent(Response::HTTP_OK);
     }
 
     private function getTaskAssignedEmailData(array $data, Authenticatable $user): array
