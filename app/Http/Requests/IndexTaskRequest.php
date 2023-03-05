@@ -39,4 +39,11 @@ class IndexTaskRequest extends FormRequest
             ]
         ];
     }
+
+    protected function passedValidation(): void
+    {
+        $this->replace([
+            'status' => Str::upper($this->status)
+        ]);
+    }
 }

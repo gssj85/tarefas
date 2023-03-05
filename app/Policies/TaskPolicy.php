@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Task;
@@ -8,7 +10,7 @@ use Illuminate\Auth\Access\Response;
 
 class TaskPolicy
 {
-    public function taskBelongsOrIsAssignedToUser(User $user, Task $task): Response
+    public function show(User $user, Task $task): Response
     {
         $taskBelongsOrIsAssignedToUser = $task->user_id === $user->id
             || $task->user_id_assigned_to === $user->id;

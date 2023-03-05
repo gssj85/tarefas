@@ -20,26 +20,21 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
 
     public function findByAssignmentAndStatus(array $data): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        $userId = $data['user_id'];
+        $user = auth()->user();
+        $userId = $user->getAuthIdentifier();
+        $isSuperAdmin = $user->hasRole('super-admin');
+
         $assignedTo = $data['assigned-to'] ?? null;
         $status = $data['status'] ?? null;
 
         $query = $this->getSelectQueryBuilder();
-
         if ($assignedTo) {
-            try {
-                match ($assignedTo) {
-                    'me' => $query->where('user_id_assigned_to', $userId),
-                    'others' => $query->where('user_id', $userId)
-                        ->whereNot('user_id_assigned_to', $userId),
-                };
-            } catch (\UnhandledMatchError $e) {
-                $message = 'O parâmetro passado no filtro de atribuição é inválido,'
-                    . ' parâmetros válidos são: \'me\' e \'others\'';
-
-                throw new \DomainException($message);
-            }
-        } else {
+            match ($assignedTo) {
+                'me' => $query->where('user_id_assigned_to', $userId),
+                'others' => $query->where('user_id', $userId)
+                    ->whereNot('user_id_assigned_to', $userId),
+            };
+        } else if (!$isSuperAdmin) {
             $query->where(function ($query) use ($userId) {
                 $query->where('user_id', $userId)
                     ->orWhere('user_id_assigned_to', $userId);
@@ -47,16 +42,7 @@ class TaskRepository extends AbstractRepository implements TaskRepositoryInterfa
         }
 
         if ($status) {
-            $statusEnum = TaskStatusEnum::tryFrom(strtoupper($status));
-
-            if ($statusEnum === null) {
-                $message = 'O parâmetro passado no filtro de status é inválido,'
-                    . ' parâmetros válidos são: \'in_progress\', \'done\' e \'canceled\'';
-
-                throw new \DomainException($message);
-            }
-
-            $query->where('status', $statusEnum);
+            $query->where('status', TaskStatusEnum::from($status));
         }
 
         return $query->paginate(5);

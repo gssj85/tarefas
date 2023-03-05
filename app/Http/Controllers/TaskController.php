@@ -21,16 +21,11 @@ class TaskController extends Controller
 {
     public function __construct(private readonly TaskRepositoryInterface $taskRepository) {}
 
-    public function index(IndexTaskRequest $request, Authenticatable $user)
+    public function index(IndexTaskRequest $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         $data = $request->validated();
-        $data['user_id'] = $user->id;
 
-        try {
-            return TaskResource::collection($this->taskRepository->findByAssignmentAndStatus($data));
-        } catch (\DomainException $e) {
-            return response()->json(['message' => $e->getMessage()]);
-        }
+        return TaskResource::collection($this->taskRepository->findByAssignmentAndStatus($data));
     }
 
     public function store(StoreTaskRequest $storeTaskRequest, Authenticatable $user): JsonResponse
@@ -47,14 +42,14 @@ class TaskController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    public function show(int $taskId)
+    public function show(int $taskId): TaskResource|JsonResponse
     {
         $task = $this->taskRepository->findByIdWithUserAndAssigned($taskId);
         if ($task === null) {
             return response()->json(['message' => 'Tarefa não encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $response = Gate::inspect('taskBelongsOrIsAssignedToUser', $task);
+        $response = Gate::inspect('show', $task);
         if (!$response->allowed()) {
             return response()->json(['message' => $response->message()], $response->status());
         }
