@@ -33,7 +33,7 @@ services:
             POSTGRES_USER: ${DB_USERNAME}
             POSTGRES_PASSWORD: ${DB_PASSWORD}
         ports:
-            - "5432:5432"
+            - '5432:5432'
         networks:
             - tarefas
 
@@ -42,13 +42,27 @@ services:
         container_name: tarefas-nginx
         restart: unless-stopped
         ports:
-            - "8000:80"
+            - '8000:80'
         volumes:
             - ./:/var/www
             - ./docker/nginx:/etc/nginx/conf.d
         networks:
             - tarefas
 
+    rabbitmq:
+        image: rabbitmq:3.11.10-management
+        container_name: tarefas-rabbitmq
+        ports:
+            - '5672:5672'
+            - '15672:15672'
+        user: 1000:1000
+        volumes:
+            - './docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
+            - './docker/rabbitmq/log/:/var/log/rabbitmq'
+        networks:
+            - tarefas
+
 networks:
     tarefas:
+        name: tarefas
         driver: bridge
