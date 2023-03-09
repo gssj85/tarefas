@@ -40,6 +40,10 @@ docker-compose exec app rm -rf vendor composer.lock \
 ``` bash
 docker-compose exec app php artisan migrate
 ```
+#### Cria as Roles e Usuários padrão do sistema
+``` bash
+docker-compose exec app php artisan db:seed
+```
 #### Roda o Worker para envio de e-mail
 ``` bash
 docker-compose exec app php artisan queue:work
