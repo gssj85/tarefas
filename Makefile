@@ -8,6 +8,10 @@ POSTGRES_CONTAINER = $(DOCKER_COMPOSE) exec db
 NGINX_CONTAINER = $(DOCKER_COMPOSE) exec nginx
 RABBITMQ_CONTAINER = $(DOCKER_COMPOSE) exec rabbitmq
 
+# Misc
+.DEFAULT_GOAL = help
+.PHONY = help setup build up up-d start stop down logs logs-f ps php-bash artisan list-ip-containers
+
 # Executables
 ARTISAN = $(PHP_CONTAINER) php artisan $(c)
 
