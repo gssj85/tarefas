@@ -8,12 +8,12 @@ POSTGRES_CONTAINER = $(DOCKER_COMPOSE) exec db
 NGINX_CONTAINER = $(DOCKER_COMPOSE) exec nginx
 RABBITMQ_CONTAINER = $(DOCKER_COMPOSE) exec rabbitmq
 
-# Misc
-.DEFAULT_GOAL = help
-.PHONY = help setup build up up-d start stop down logs logs-f ps php-bash artisan list-ip-containers
-
 # Executables
 ARTISAN = $(PHP_CONTAINER) php artisan $(c)
+
+# Misc
+.DEFAULT_GOAL = help
+.PHONY = help setup build up up-d start stop down logs logs-f ps php-bash artisan list-ip-containers force
 
 ## 👷 Makefile
 help: ## Outputs this help screen
@@ -52,8 +52,11 @@ ps: ## Show containers' statuses
 php-bash: ## Connect to the PHP FPM container via BASH
 	@$(PHP_CONTAINER) bash
 
-artisan: ## Laravel's Artisan
+artisan: force ## Laravel's Artisan
 	@$(ARTISAN)
 
 list-ip-containers: ## List all ip containers
-	docker network inspect tarefas_tarefas | grep --color -E 'IPv4Address|Name'
+	docker network inspect tarefas | grep --color -E 'IPv4Address|Name'
+
+force:
+	@true
