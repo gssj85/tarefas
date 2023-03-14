@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailUserAboutTaskEventListener implements ShouldQueue
 {
-    public function __construct() {}
+    public $connection = 'rabbitmq';
+    public $queue = 'emails';
 
     public function handle(TaskAssignedEvent|TaskDoneEvent $taskAssignedEvent): void
     {
-        $email = new TaskEventsMail($taskAssignedEvent->message, $taskAssignedEvent->subject);
-        // Adiciona uma gordurinha para tentar evitar falhas com o MailTrap
-        $when = now()->addSeconds(3);
-        Mail::to($taskAssignedEvent->to)->later($when, $email);
+        Mail::to($taskAssignedEvent->to)->send(
+            new TaskEventsMail($taskAssignedEvent->message, $taskAssignedEvent->subject)
+        );
     }
 }
